@@ -1,10 +1,8 @@
 /*
- * ame-lightbox 0.0.8
+ * ame-lightbox 0.0.9
  * Lightbox component on top of angular material
  * https://github.com/alirezamirian/angular-material-lightbox
 */
-
-
 
 (function(angular){
     "use strict";
@@ -20,8 +18,6 @@
     ])
 
 })(angular);
-
-
 (function(angular){
 
     angular.module("ame.lightbox")
@@ -38,13 +34,12 @@
         });
 })(angular);
 
-
-
 (function(angular) {
     "use strict";
 
     ameLightboxFactory.$inject = ["$mdDialog", "$timeout"];
     var defaults = {
+        parent: null,
         buttonClass: "",
         initialIndex: 0,
         keyboard: true,
@@ -71,6 +66,7 @@
                 templateUrl: "ame/lightbox/dialog-lightbox.html",
                 controller: "AmeLightboxController",
                 controllerAs: "ctrl",
+                parent: options.parent,
                 targetEvent: options.targetEvent,
                 clickOutsideToClose: true,
                 onShowing: function(){
@@ -95,144 +91,150 @@
 
 })(angular);
 
-
-
 (function(angular) {
-    "use strict";
+	"use strict";
 
-    AmeLightboxController.$inject = ["items", "options", "$log", "$mdDialog", "$scope", "$document", "$timeout", "$mdMedia"];
-    angular.module("ame.lightbox")
+	AmeLightboxController.$inject = ["items", "options", "$log", "$mdDialog", "$scope", "$document", "$timeout", "$mdMedia"];
+	angular.module("ame.lightbox")
 
-        .controller("AmeLightboxController", AmeLightboxController);
+		.controller("AmeLightboxController", AmeLightboxController);
 
-    function AmeLightboxController(items, options, $log, $mdDialog, $scope, $document, $timeout, $mdMedia) {
-        var self = this;
-        if (!items.length > 0) {
-            $log.warn("mde.lightbox: ", "calling lightbox without any image!");
-            $mdDialog.cancel();
-            return;
-        }
-        self.loading      = true;
-        self.options      = options;
-        self.imageLoaded  = imageLoaded;
-        self.currentIndex = Math.max(Math.min(options.initialIndex || 0, items.length - 1), 0);
-        self.prev         = prev;
-        self.next         = next;
-        self.imageWidth   = null;
-        self.imageHeight  = null;
-        if (options.keyboard) {
-            _listenToKeyboardEvents();
-        }
+	function AmeLightboxController(items, options, $log, $mdDialog, $scope, $document, $timeout, $mdMedia) {
+		var self = this;
+		if (!items.length > 0) {
+			$log.warn("mde.lightbox: ", "calling lightbox without any image!");
+			$mdDialog.cancel();
+			return;
+		}
+		self.loading      = true;
+		self.options      = options;
+		self.imageLoaded  = imageLoaded;
+		self.currentIndex = Math.max(Math.min(options.initialIndex || 0, items.length - 1), 0);
+		self.prev         = prev;
+		self.next         = next;
+		self.imageWidth   = null;
+		self.imageHeight  = null;
+		if (options.keyboard) {
+			_listenToKeyboardEvents();
+		}
 
-        $scope.$on("$destroy", _cleanup);
+		$scope.$on("$destroy", _cleanup);
 
-        function next() {
-            self.currentIndex = (self.currentIndex + 1) % items.length;
+		function next() {
+			self.currentIndex = (self.currentIndex + 1) % items.length;
 
-        }
+		}
 
-        function prev() {
-            var index         = self.currentIndex - 1;
-            self.currentIndex = (index >= 0 ? index : index + items.length) % items.length;
-        }
+		function prev() {
+			var index         = self.currentIndex - 1;
+			self.currentIndex = (index >= 0 ? index : index + items.length) % items.length;
+		}
 
-        $scope.$watch(function() {
-            return self.currentIndex;
-        }, function(currentIndex) {
-            if (angular.isDefined(currentIndex)) {
-                self.loading = true;
-            }
-        })
+		$scope.$watch(function() {
+			return self.currentIndex;
+		}, function(currentIndex) {
+			if (angular.isDefined(currentIndex)) {
+				self.loading = true;
+			}
+		})
 
-        function imageLoaded() {
-            self.loading  = false;
-            self.resizing = true;
-            resize().then(function() {
-                self.resizing = false;
-            });
-        }
+		function imageLoaded() {
+			self.loading  = false;
+			self.resizing = true;
+			resize().then(function() {
+				self.resizing = false;
+			});
 
-        function resize() {
-            var imgContainer   = document.getElementById("ame_lightbox_image");
-            var img            = imgContainer.getElementsByTagName("img")[0];
-            var containingArea = getContainingArea();
+			window.addEventListener('resize', resize );
 
-            var height = img.naturalHeight;
-            var width  = img.naturalWidth;
-            if (img.naturalWidth / containingArea.width > img.naturalHeight / containingArea.height) {
-                // width may be bottleneck
-                if (img.naturalWidth > containingArea.width) {
-                    width = containingArea.width;
-                }
-                height = img.naturalHeight * (width / img.naturalWidth);
-            }
-            else {
-                // height may be bottleneck
+		}
 
-                if (img.naturalHeight > containingArea.height) {
-                    height = containingArea.height;
-                }
-                width = img.naturalWidth * (height / img.naturalHeight);
-            }
-            imgContainer.style.height = height + "px";
-            imgContainer.style.width  = width + "px";
-            return $timeout(200);
+		function resize() {
+			var imgContainer   = document.getElementById("ame_lightbox_image");
+			var img            = imgContainer.getElementsByTagName("img")[0];
+			var containingArea = getContainingArea();
 
-        }
+			var height = img.naturalHeight;
+			var width  = img.naturalWidth;
+			if (img.naturalWidth / containingArea.width > img.naturalHeight / containingArea.height) {
+				// width may be bottleneck
+				if (img.naturalWidth > containingArea.width) {
+					width = containingArea.width;
+				}
+				height = img.naturalHeight * (width / img.naturalWidth);
+			}
+			else {
+				// height may be bottleneck
 
-        function getContainingArea() {
-            var body = document.documentElement || document.body;
+				if (img.naturalHeight > containingArea.height) {
+					height = containingArea.height;
+				}
+				width = img.naturalWidth * (height / img.naturalHeight);
+			}
+			imgContainer.style.height = height + "px";
+			imgContainer.style.width  = width + "px";
+			return $timeout(200);
 
-            var factor       = .8,
-                buttonSize   = $mdMedia("gt-xs") ? 80 : 0,
-                dotsHeight   = 60;
-            var windowWidth  = window.innerWidth || body.clientWidth;
-            var windowHeight = window.innerHeight || body.clientHeight;
-            var area         = {
-                width: (windowWidth) * factor,
-                height: (windowHeight) * factor
-            };
-            if (area.width > windowWidth - (2 * buttonSize)) {
-                area.width = windowWidth - (2 * buttonSize);
-            }
-            if (area.height > windowHeight - (dotsHeight)) {
-                area.height = windowHeight - (dotsHeight);
-            }
-            return area;
-        }
+		}
 
+		function getContainingArea() {
 
-        function _listenToKeyboardEvents() {
-            $document.bind("keydown", _keypressHandler);
-        }
+			var body = document.documentElement || document.body;
 
-        function _stopListeningToKeyboardEvents() {
-            $document.unbind("keydown", _keypressHandler);
-        }
+			if(options.parent)
+				body = options.parent;
 
-        function _keypressHandler(event) {
-            var fn = null;
-            switch (event.keyCode) {
-                case 37: //"ArrowLeft":
-                case 40: //"ArrowDown":
-                    fn = document.dir == "rtl" ? next : prev;
-                    break;
-                case 39: //"ArrowRight":
-                case 38: //"ArrowUp":
-                    fn = document.dir == "rtl" ? prev : next;
-                    break;
-            }
-            if (fn) {
-                event.stopPropagation();
-                event.preventDefault();
-                $scope.$apply(fn);
-            }
-        }
+			var factor       = .8,
+				buttonSize   = $mdMedia("gt-xs") ? 80 : 0,
+				dotsHeight   = 60;
+			var windowWidth  = body.clientWidth || window.innerWidth;
+			var windowHeight = body.clientHeight || window.innerHeight;
+			var area         = {
+				width: (windowWidth) * factor,
+				height: (windowHeight) * factor
+			};
+			if (area.width > windowWidth - (2 * buttonSize)) {
+				area.width = windowWidth - (2 * buttonSize);
+			}
+			if (area.height > windowHeight - (dotsHeight)) {
+				area.height = windowHeight - (dotsHeight);
+			}
+			return area;
+		}
 
-        function _cleanup() {
-            _stopListeningToKeyboardEvents();
-        }
-    }
+		function _listenToKeyboardEvents() {
+			$document.bind("keydown", _keypressHandler);
+		}
+
+		function _stopListeningToKeyboardEvents() {
+			$document.unbind("keydown", _keypressHandler);
+		}
+
+		function _keypressHandler(event) {
+			var fn = null;
+			switch (event.keyCode) {
+				case 37: //"ArrowLeft":
+				case 40: //"ArrowDown":
+					fn = document.dir == "rtl" ? next : prev;
+					break;
+				case 39: //"ArrowRight":
+				case 38: //"ArrowUp":
+					fn = document.dir == "rtl" ? prev : next;
+					break;
+			}
+			if (fn) {
+				event.stopPropagation();
+				event.preventDefault();
+				$scope.$apply(fn);
+			}
+		}
+
+		function _cleanup() {
+
+			window.removeEventListener('resize', resize);
+			_stopListeningToKeyboardEvents();
+		}
+	}
 
 })(angular);
 (function(module) {
@@ -258,11 +260,11 @@ module.run(['$templateCache', function($templateCache) {
     '        </div>\n' +
     '    </md-dialog-content>\n' +
     '\n' +
-    '    <md-button ng-class="ctrl.options.buttonClass" aria-label="Next" hide-xs\n' +
+    '    <md-button ng-class="ctrl.options.buttonClass" aria-label="Next" hide-xs ng-if="ctrl.items.length > 1"\n' +
     '               class="md-icon-button _next" ng-click="ctrl.next()">\n' +
     '        <md-icon md-svg-icon="ame/lightbox/icons/ic_chevron_left_black_24px.svg"/>\n' +
     '    </md-button>\n' +
-    '    <md-button ng-class="ctrl.options.buttonClass" aria-label="Prev" hide-xs\n' +
+    '    <md-button ng-class="ctrl.options.buttonClass" aria-label="Prev" hide-xs ng-if="ctrl.items.length > 1"\n' +
     '               class="md-icon-button _prev" ng-click="ctrl.prev()">\n' +
     '        <md-icon md-svg-icon="ame/lightbox/icons/ic_chevron_left_black_24px.svg"/>\n' +
     '    </md-button>\n' +

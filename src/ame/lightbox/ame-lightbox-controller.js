@@ -4,7 +4,7 @@
  */
 
 
-((function(angular) {
+(function(angular) {
 	"use strict";
 
 	AmeLightboxController.$inject = ["items", "options", "$log", "$mdDialog", "$scope", "$document", "$timeout", "$mdMedia"];
