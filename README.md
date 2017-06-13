@@ -26,6 +26,7 @@ TODO
 {
   initialIndex: 0, // initial image to show
   targetEvent: undefined, // to be passed to $mdDialog
+  parent: null, // parent element to be passed to $mdDialog
   buttonClass: "", // a list of classes to be added to navigation buttons
   keyboard: true, // keyboard navigation
   showDots: true, // whether to show dots or not
@@ -39,7 +40,7 @@ TODO
 bower install ame-lightbox --save
 ```
 
-## Build 
+## Build
 ```bash
 npm install
 gulp build

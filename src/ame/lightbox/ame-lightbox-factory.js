@@ -8,6 +8,7 @@
     "use strict";
 
     var defaults = {
+        parent: null,
         buttonClass: "",
         initialIndex: 0,
         keyboard: true,
@@ -34,6 +35,7 @@
                 templateUrl: "ame/lightbox/dialog-lightbox.html",
                 controller: "AmeLightboxController",
                 controllerAs: "ctrl",
+                parent: options.parent,
                 targetEvent: options.targetEvent,
                 clickOutsideToClose: true,
                 onShowing: function(){
