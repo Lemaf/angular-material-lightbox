@@ -20,6 +20,7 @@
 
 .ame-lightbox ._next {
   transform: rotateY(180deg);
+  right: -70px;
 }
 
 [dir=rtl] .ame-lightbox ._next {
@@ -64,6 +65,7 @@
 
 .ame-lightbox ._prev {
   transform: none;
+  left: -70px;
 }
 
 [dir=rtl] .ame-lightbox ._prev {

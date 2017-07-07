@@ -18,10 +18,12 @@ $animationDuration: .2s;
   ._next {
     @include bidi-value(transform, rotateY(180deg), none);
     @include bidi-prop(right, left, -70px);
+    right: -70px;
   }
   ._prev {
     @include bidi-value(transform, none, rotateY(180deg));
     @include bidi-prop(left, right, -70px);
+    left: -70px;
   }
   #ame_lightbox_image {
     transition: width $animationDuration ease, height $animationDuration ease;
