@@ -8,6 +8,7 @@ var streamqueue = require('streamqueue');
 
 var srcPath = "src";
 var distPath = "dist";
+var demoDistPath = "demo/dist";
 var outputName = "ame-lightbox";
 
 var banner = '/*\n' +
@@ -44,6 +45,7 @@ function buildJs(){
             pkg: pkg
         }))
         .pipe(gulp.dest(distPath))
+        .pipe(gulp.dest(demoDistPath))
         .pipe($.uglify())
         .pipe($.rename({suffix: ".min"}))
         .pipe(gulp.dest(distPath));
@@ -54,6 +56,7 @@ function buildCss(){
         .pipe($.sass())
         .pipe($.concatCss(outputName + ".css"))
         .pipe(gulp.dest(distPath))
+        .pipe(gulp.dest(demoDistPath))
         .pipe($.minifyCss())
         .pipe($.rename({suffix: '.min'}))
         .pipe(gulp.dest(distPath));
