@@ -43,11 +43,20 @@
 			self.currentIndex = (index >= 0 ? index : index + items.length) % items.length;
 		}
 
-		$scope.$watch(function() {
+		$scope.$watch(function () {
 			return self.currentIndex;
-		}, function(currentIndex) {
+		}, function (currentIndex, prevIndex) {
+
 			if (angular.isDefined(currentIndex)) {
-				self.loading = true;
+
+				if(angular.isDefined(prevIndex) && prevIndex !== currentIndex &&
+					self.items[currentIndex] !== self.items[currentIndex]){
+						self.loading = true;
+				}
+
+				if (self.items[currentIndex].src === self.items[prevIndex].src){
+					imageLoaded();
+				}
 			}
 		})
 

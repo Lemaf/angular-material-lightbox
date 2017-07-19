@@ -1,6 +1,6 @@
 {
   "name": "ame-lightbox",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Lightbox component on top of angular material",
   "main": [
     "./dist/ame-lightbox.min.js",
